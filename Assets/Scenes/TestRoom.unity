@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4469871, g: 0.49687827, b: 0.57505417, a: 1}
+  m_IndirectSpecularColor: {r: 0.4469877, g: 0.49687904, b: 0.575056, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &4
 LightmapSettings:
@@ -20382,6 +20382,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616436924}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &617278830 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8634589293312570788, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+  m_PrefabInstance: {fileID: 8634589291851047539}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &620426083
 GameObject:
   m_ObjectHideFlags: 0
@@ -67046,6 +67051,102 @@ PrefabInstance:
       propertyPath: debugTarget
       value: 
       objectReference: {fileID: 485224008}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: obj
+      value: 
+      objectReference: {fileID: 617278830}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: rdmp
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: rspd
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: tspd
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: xsen
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: ysen
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: camlowmar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: camuppmar
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: clzompadfac
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: rayradobshid
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: clzomlay.m_Bits
+      value: 1073741824
+      objectReference: {fileID: 0}
+    - target: {fileID: 308868170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: obhidlay.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: obj
+      value: 
+      objectReference: {fileID: 617278830}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: rspd
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: tspd
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: xsen
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: ysen
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: camlowmar
+      value: 170
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: camuppmar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: clzompadfac
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: posintertype
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: rayradobshid
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: clzommindisfac
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 796718073, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: clzomlay.m_Bits
+      value: 1073741824
+      objectReference: {fileID: 0}
     - target: {fileID: 902956908, guid: 0f80abe9758af794c94d829c20727117, type: 3}
       propertyPath: debugTarget
       value: 
@@ -67058,6 +67159,10 @@ PrefabInstance:
       propertyPath: debugTarget
       value: 
       objectReference: {fileID: 485224008}
+    - target: {fileID: 6602444994393196865, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: runSpeed
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8634589291851047554, guid: 0f80abe9758af794c94d829c20727117, type: 3}
       propertyPath: debugTarget
       value: 
