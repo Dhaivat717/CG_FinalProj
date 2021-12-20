@@ -17,9 +17,9 @@ public struct TargetInfo {
 
 public class IKSolver : MonoBehaviour {
 
-    private static int max_iter = 10;
+    private static int maxIterations = 10;
     private static float w = 1.0f;
-    private static float angle = 20.0f; 
+    private static float footAngleToNormal = 20.0f; 
     public static void solveChainCCD(ref JointHinge[] joints, Transform endEffector, TargetInfo target, float tolerance, float minimumChangePerIteration = 0, float singularityRadius=0 ,bool hasFoot = false, bool printDebugLogs = false) {
 
         int iteration = 0;
@@ -28,7 +28,7 @@ public class IKSolver : MonoBehaviour {
         float errorDelta;
 
         
-        while (iteration < max_iter && error > tolerance) {
+        while (iteration < maxIterations && error > tolerance) {
 
             for (int i = 0; i < joints.Length; i++) {
                
@@ -47,17 +47,17 @@ public class IKSolver : MonoBehaviour {
         }
 
         if (printDebugLogs) {
-            if (iteration == max_iter) Debug.Log(endEffector.gameObject.name + " could not solve with " + iteration + " iterations. The error is " + error);
-            if (iteration != max_iter && iteration > 0) Debug.Log(endEffector.gameObject.name + " completed CCD with " + iteration + " iterations and an error of " + error);
+            if (iteration == maxIterations) Debug.Log(endEffector.gameObject.name + " could not solve with " + iteration + " iterations. The error is " + error);
+            if (iteration != maxIterations && iteration > 0) Debug.Log(endEffector.gameObject.name + " completed CCD with " + iteration + " iterations and an error of " + error);
         }
     }
 
    
     private static void solveJointCCD(ref JointHinge joint, ref Transform endEffector, ref TargetInfo target, float singularityRadius, bool adjustToTargetNormal) {
-        Vector3 P_rotation = joint.getRotationPoint();
-        Vector3 Axis_rotation = joint.getRotationAxis();
-        Vector3 toEnd = Vector3.ProjectOnPlane((endEffector.position - P_rotation), Axis_rotation);
-        Vector3 toTarget = Vector3.ProjectOnPlane(target.position - P_rotation, Axis_rotation);
+        Vector3 rotPoint = joint.getRotationPoint();
+        Vector3 rotAxis = joint.getRotationAxis();
+        Vector3 toEnd = Vector3.ProjectOnPlane((endEffector.position - rotPoint), rotAxis);
+        Vector3 toTarget = Vector3.ProjectOnPlane(target.position - rotPoint, rotAxis);
 
         
         if (toTarget == Vector3.zero || toEnd == Vector3.zero) return;
@@ -66,10 +66,10 @@ public class IKSolver : MonoBehaviour {
 
         
         if (adjustToTargetNormal) {
-            angle = angle + 90.0f - Vector3.SignedAngle(Vector3.ProjectOnPlane(target.normal, Axis_rotation), toEnd, Axis_rotation);
+            angle = footAngleToNormal + 90.0f - Vector3.SignedAngle(Vector3.ProjectOnPlane(target.normal, rotAxis), toEnd, rotAxis);
         }
         else {
-            angle = w * joint.getWeight() * Vector3.SignedAngle(toEnd, toTarget, Axis_rotation);
+            angle = w * joint.getWeight() * Vector3.SignedAngle(toEnd, toTarget, rotAxis);
         }
         joint.applyRotation(angle);
     }
@@ -86,7 +86,7 @@ public class IKSolver : MonoBehaviour {
         Debug.Break();
         yield return null;
 
-        while (iteration < max_iter && error > tolerance) {
+        while (iteration < maxIterations && error > tolerance) {
 
             if (printDebugLogs) Debug.Log("Starting iteration " + iteration + " with an error of " + error);
             Debug.Break();
@@ -96,13 +96,13 @@ public class IKSolver : MonoBehaviour {
                 int k = mod((i - 1), joints.Length);
 
                 
-                Vector3 P_rotation = joints[k].getRotationPoint();
-                Vector3 Axis_rotation = joints[k].getRotationAxis();
-                Vector3 toEnd = Vector3.ProjectOnPlane((endEffector.position - P_rotation), Axis_rotation);
-                Vector3 toTarget = Vector3.ProjectOnPlane(target.position - P_rotation, Axis_rotation);
-                DebugShapes.DrawPlane(P_rotation, Axis_rotation, toTarget, 1.0f, Color.yellow);
-                Debug.DrawLine(P_rotation, P_rotation + toTarget, Color.blue);
-                Debug.DrawLine(P_rotation, P_rotation + toEnd, Color.red);
+                Vector3 rotPoint = joints[k].getRotationPoint();
+                Vector3 rotAxis = joints[k].getRotationAxis();
+                Vector3 toEnd = Vector3.ProjectOnPlane((endEffector.position - rotPoint), rotAxis);
+                Vector3 toTarget = Vector3.ProjectOnPlane(target.position - rotPoint, rotAxis);
+                DebugShapes.DrawPlane(rotPoint, rotAxis, toTarget, 1.0f, Color.yellow);
+                Debug.DrawLine(rotPoint, rotPoint + toTarget, Color.blue);
+                Debug.DrawLine(rotPoint, rotPoint + toEnd, Color.red);
                 
 
                 if (printDebugLogs) Debug.Log("Iteration " + iteration + ", joint " + joints[k].gameObject.name + " gonna happen now.");
@@ -112,10 +112,10 @@ public class IKSolver : MonoBehaviour {
                 solveJointCCD(ref joints[k], ref endEffector, ref target, singularityRadius, hasFoot && k == joints.Length - 1);
 
                 
-                toEnd = Vector3.ProjectOnPlane((endEffector.position - P_rotation), Axis_rotation);
-                DebugShapes.DrawPlane(P_rotation, Axis_rotation, toTarget, 1.0f, Color.yellow);
-                Debug.DrawLine(P_rotation, P_rotation + toTarget, Color.blue);
-                Debug.DrawLine(P_rotation, P_rotation + toEnd, Color.red);
+                toEnd = Vector3.ProjectOnPlane((endEffector.position - rotPoint), rotAxis);
+                DebugShapes.DrawPlane(rotPoint, rotAxis, toTarget, 1.0f, Color.yellow);
+                Debug.DrawLine(rotPoint, rotPoint + toTarget, Color.blue);
+                Debug.DrawLine(rotPoint, rotPoint + toEnd, Color.red);
                 
 
                 if (printDebugLogs) Debug.Log("Iteration " + iteration + ", joint " + joints[k].gameObject.name + " done.");
@@ -225,12 +225,12 @@ public class IKSolver : MonoBehaviour {
         float alpha;
 
         int iteration = 0;
-        while (iteration < max_iter || error.magnitude < tolerance) {
+        while (iteration < maxIterations || error.magnitude < tolerance) {
 
            
             for (int k = 0; k < joints.Length; k++) {
-                Vector3 Axis_rotation = joints[k].getRotationAxis();
-                Vector3 cross = Vector3.Cross(Axis_rotation, endEffector.position - joints[k].getRotationPoint());
+                Vector3 rotAxis = joints[k].getRotationAxis();
+                Vector3 cross = Vector3.Cross(rotAxis, endEffector.position - joints[k].getRotationPoint());
                 J[0, k] = cross.x;
                 J[1, k] = cross.y;
                 J[2, k] = cross.z;
