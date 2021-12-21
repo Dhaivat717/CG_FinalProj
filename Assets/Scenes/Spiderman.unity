@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4469877, g: 0.49687904, b: 0.575056, a: 1}
+  m_IndirectSpecularColor: {r: 0.4469871, g: 0.49687827, b: 0.57505417, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &4
 LightmapSettings:
@@ -43407,8 +43407,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1360260442}
-  - component: {fileID: 1360260441}
   - component: {fileID: 1360260440}
+  - component: {fileID: 1360260441}
   - component: {fileID: 1360260439}
   m_Layer: 0
   m_Name: Sphere
@@ -43487,8 +43487,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1360260438}
   m_LocalRotation: {x: 0, y: 0.5735764, z: 0, w: 0.8191521}
-  m_LocalPosition: {x: -87, y: 10, z: 66}
-  m_LocalScale: {x: 30, y: 50, z: 30}
+  m_LocalPosition: {x: -87, y: 17.1, z: 66}
+  m_LocalScale: {x: 50, y: 50, z: 50}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
@@ -66928,6 +66928,26 @@ PrefabInstance:
       propertyPath: legQueue.Array.data[7]
       value: 
       objectReference: {fileID: 1397577797}
+    - target: {fileID: 5356263202611163170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: primaryLegs.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5356263202611163170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: primaryLegs.Array.data[0]
+      value: 
+      objectReference: {fileID: 731120737}
+    - target: {fileID: 5356263202611163170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: primaryLegs.Array.data[1]
+      value: 
+      objectReference: {fileID: 1131466868}
+    - target: {fileID: 5356263202611163170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: primaryLegs.Array.data[2]
+      value: 
+      objectReference: {fileID: 697613106}
+    - target: {fileID: 5356263202611163170, guid: 0f80abe9758af794c94d829c20727117, type: 3}
+      propertyPath: primaryLegs.Array.data[3]
+      value: 
+      objectReference: {fileID: 250329666}
     - target: {fileID: 6602444994393196865, guid: 0f80abe9758af794c94d829c20727117, type: 3}
       propertyPath: runSpeed
       value: 6

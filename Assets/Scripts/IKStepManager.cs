@@ -11,9 +11,9 @@ public class IKStepManager : MonoBehaviour
     public enum StepMode { AlternatingTetrapodGait, QueueWait, QueueNoWait }
     public StepMode spiderStyle;
     public List<IKStepper> legQueue;
-    private List<IKStepper> stepQueue;
-    private Dictionary<int, bool> waitingForStep;
-    public List<IKStepper> gaitGroupA;
+    private List<IKStepper> whichLeg;
+    private Dictionary<int, bool> delay;
+    public List<IKStepper> primaryLegs;
     public List<IKStepper> gaitGroupB;
     private List<IKStepper> currentGaitGroup;
     private float nextSwitchTime;
@@ -27,7 +27,7 @@ public class IKStepManager : MonoBehaviour
     private void Awake()
     {
 
-        stepQueue = new List<IKStepper>();
+        whichLeg = new List<IKStepper>();
         int k = 0;
         foreach (var ikStepper in legQueue.ToArray())
         {
@@ -42,16 +42,16 @@ public class IKStepManager : MonoBehaviour
 
         }
 
-        waitingForStep = new Dictionary<int, bool>();
+        delay = new Dictionary<int, bool>();
         foreach (var ikStepper in legQueue)
         {
-            waitingForStep.Add(ikStepper.GetInstanceID(), false);
+            delay.Add(ikStepper.GetInstanceID(), false);
         }
 
         k = 0;
-        foreach (var ikStepper in gaitGroupA.ToArray())
+        foreach (var ikStepper in primaryLegs.ToArray())
         {
-            if (!ikStepper.allowedTargetManipulationAccess()) gaitGroupA.RemoveAt(k);
+            if (!ikStepper.allowedTargetManipulationAccess()) primaryLegs.RemoveAt(k);
             else k++;
         }
         k = 0;
@@ -61,7 +61,7 @@ public class IKStepManager : MonoBehaviour
             else k++;
         }
 
-        currentGaitGroup = gaitGroupA;
+        currentGaitGroup = primaryLegs;
         nextSwitchTime = maxStepTime;
     }
 
@@ -78,14 +78,14 @@ public class IKStepManager : MonoBehaviour
         {
 
             // Check if Leg isnt already waiting for step.
-            if (waitingForStep[ikStepper.GetInstanceID()] == true) continue;
+            if (delay[ikStepper.GetInstanceID()] == true) continue;
 
             //Now perform check if a step is needed and if so enqueue the element
             if (ikStepper.stepCheck())
             {
-                stepQueue.Add(ikStepper);
-                waitingForStep[ikStepper.GetInstanceID()] = true;
-                if (flag) Debug.Log(ikStepper.name + " is enqueued to step at queue position " + stepQueue.Count);
+                whichLeg.Add(ikStepper);
+                delay[ikStepper.GetInstanceID()] = true;
+                if (flag) Debug.Log(ikStepper.name + " is enqueued to step at queue position " + whichLeg.Count);
             }
         }
 
@@ -93,15 +93,14 @@ public class IKStepManager : MonoBehaviour
 
 
         int k = 0;
-        foreach (var ikStepper in stepQueue.ToArray())
+        foreach (var ikStepper in whichLeg.ToArray())
         {
             if (ikStepper.allowedToStep())
             {
                 ikStepper.getIKChain().unpauseSolving();
                 ikStepper.step(calculateStepTime(ikStepper));
-                // Remove the stepping leg from the list:
-                waitingForStep[ikStepper.GetInstanceID()] = false;
-                stepQueue.RemoveAt(k);
+                delay[ikStepper.GetInstanceID()] = false;
+                whichLeg.RemoveAt(k);
                 if (flag) Debug.Log(ikStepper.name + " was allowed to step and is thus removed.");
             }
             else
@@ -117,7 +116,7 @@ public class IKStepManager : MonoBehaviour
             }
         }
 
-        foreach (var ikStepper in stepQueue)
+        foreach (var ikStepper in whichLeg)
         {
             ikStepper.getIKChain().pauseSolving();
         }
@@ -129,13 +128,13 @@ public class IKStepManager : MonoBehaviour
         if (Time.time < nextSwitchTime) return;
 
 
-        currentGaitGroup = (currentGaitGroup == gaitGroupA) ? gaitGroupB : gaitGroupA;
+        currentGaitGroup = (currentGaitGroup == primaryLegs) ? gaitGroupB : primaryLegs;
         float stepTime = calculateAverageStepTime(currentGaitGroup);
         nextSwitchTime = Time.time + stepTime;
 
         if (flag)
         {
-            string text = ((currentGaitGroup == gaitGroupA) ? "Group: A" : "Group B") + " StepTime: " + stepTime;
+            string text = ((currentGaitGroup == primaryLegs) ? "Group: A" : "Group B") + " StepTime: " + stepTime;
             Debug.Log(text);
         }
 
@@ -189,11 +188,11 @@ public class IKStepManager : MonoBehaviour
 
     private void printQueue()
     {
-        if (stepQueue == null) return;
+        if (whichLeg == null) return;
         string queueText = "[";
-        if (stepQueue.Count != 0)
+        if (whichLeg.Count != 0)
         {
-            foreach (var ikStepper in stepQueue)
+            foreach (var ikStepper in whichLeg)
             {
                 queueText += ikStepper.name + ", ";
             }
