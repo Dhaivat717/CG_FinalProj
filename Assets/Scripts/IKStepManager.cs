@@ -14,7 +14,7 @@ public class IKStepManager : MonoBehaviour
     private List<IKStepper> whichLeg;
     private Dictionary<int, bool> delay;
     public List<IKStepper> primaryLegs;
-    public List<IKStepper> gaitGroupB;
+    public List<IKStepper> secondaryLegs;
     private List<IKStepper> currentGaitGroup;
     private float nextSwitchTime;
     public bool dynamicStepTime = true;
@@ -55,9 +55,9 @@ public class IKStepManager : MonoBehaviour
             else k++;
         }
         k = 0;
-        foreach (var ikStepper in gaitGroupB.ToArray())
+        foreach (var ikStepper in secondaryLegs.ToArray())
         {
-            if (!ikStepper.allowedTargetManipulationAccess()) gaitGroupB.RemoveAt(k);
+            if (!ikStepper.allowedTargetManipulationAccess()) secondaryLegs.RemoveAt(k);
             else k++;
         }
 
@@ -128,7 +128,7 @@ public class IKStepManager : MonoBehaviour
         if (Time.time < nextSwitchTime) return;
 
 
-        currentGaitGroup = (currentGaitGroup == primaryLegs) ? gaitGroupB : primaryLegs;
+        currentGaitGroup = (currentGaitGroup == primaryLegs) ? secondaryLegs : primaryLegs;
         float stepTime = calculateAverageStepTime(currentGaitGroup);
         nextSwitchTime = Time.time + stepTime;
 
