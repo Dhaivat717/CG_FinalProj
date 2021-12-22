@@ -5,28 +5,112 @@ using UnityEngine;
 [DefaultExecutionOrder(+1)]
 public class IKStepManager : MonoBehaviour
 {
-    public bool flag;
-    public Spider spider;
-
-    public enum StepMode { AlternatingTetrapodGait, QueueWait, QueueNoWait }
-    public StepMode spiderStyle;
+    public enum StepMode
+    {
+        AlternatingTetrapodGait, QueueWait, QueueNoWait
+    }
+    public enum GaitStepForcing
+    {
+        NoForcing, ForceIfOneLegSteps, ForceAlways
+    }
+    public Spider peter;
     public List<IKStepper> legQueue;
-    private List<IKStepper> whichLeg;
-    private Dictionary<int, bool> delay;
+    public float superSpeed = 0.006f;
     public List<IKStepper> primaryLegs;
+    public StepMode peterStyle;
+    private List<IKStepper> whichLeg;
     public List<IKStepper> secondaryLegs;
-    private List<IKStepper> currentGaitGroup;
-    private float nextSwitchTime;
-    public bool dynamicStepTime = true;
-    public float stepTimePerVelocity = 0.006f;
-    public float maxStepTime = 0.2f;
-
-    public enum GaitStepForcing { NoForcing, ForceIfOneLegSteps, ForceAlways }
     public GaitStepForcing gaitStepForcing;
+    private Dictionary<int, bool> delay;
+    private float stopLegs;
+    public bool flag1 = true;
+    private List<IKStepper> mainLegs;
+    public float bigS = 0.2f;
+
+    private void AlternatingTetrapodGait()
+    {
+
+        if (Time.time < stopLegs)
+        {
+            return;
+        }
+
+        if (mainLegs == primaryLegs)
+        {
+            mainLegs = secondaryLegs;
+        }
+        else
+        {
+            mainLegs = primaryLegs;
+        }
+
+        float stepTime = calculateAverageStepTime(mainLegs);
+        stopLegs = Time.time + stepTime;
+
+
+        if (gaitStepForcing == GaitStepForcing.ForceAlways)
+        {
+            foreach (var ikStepper in mainLegs)
+            {
+                ikStepper.step(stepTime);
+            }
+        }
+        else if (gaitStepForcing == GaitStepForcing.ForceIfOneLegSteps)
+        {
+            bool b = false;
+            foreach (var ikStepper in mainLegs)
+            {
+                b = b || ikStepper.stepCheck();
+                if (b == true)
+                {
+                    break;
+                }
+            }
+            if (b == true)
+            {
+                foreach (var ikStepper in mainLegs)
+                {
+                    ikStepper.step(stepTime);
+                }
+            }
+        }
+        else
+        {
+            foreach (var ikStepper in mainLegs)
+            {
+                if (ikStepper.stepCheck()) ikStepper.step(stepTime);
+            }
+        }
+    }
+
+    private float calculateAverageStepTime(List<IKStepper> legQueue)
+    {
+        if (flag1)
+        {
+            float res = 0;
+            foreach (var ikStepper in legQueue)
+            {
+                res += calculateStepTime(ikStepper);
+            }
+            return res / legQueue.Count;
+        }
+        else return bigS;
+    }
+
+    private void LateUpdate()
+    {
+        if (peterStyle == StepMode.AlternatingTetrapodGait)
+        {
+            AlternatingTetrapodGait();
+        }
+        else
+        {
+            QueuespiderStyle();
+        }
+    }
 
     private void Awake()
     {
-
         whichLeg = new List<IKStepper>();
         int k = 0;
         foreach (var ikStepper in legQueue.ToArray())
@@ -39,7 +123,6 @@ public class IKStepManager : MonoBehaviour
             {
                 legQueue.RemoveAt(k);
             }
-
         }
 
         delay = new Dictionary<int, bool>();
@@ -51,46 +134,47 @@ public class IKStepManager : MonoBehaviour
         k = 0;
         foreach (var ikStepper in primaryLegs.ToArray())
         {
-            if (!ikStepper.allowedTargetManipulationAccess()) primaryLegs.RemoveAt(k);
-            else k++;
+            if (ikStepper.allowedTargetManipulationAccess())
+            {
+                k++;
+            }
+            else
+            {
+                primaryLegs.RemoveAt(k);
+            }
         }
         k = 0;
         foreach (var ikStepper in secondaryLegs.ToArray())
         {
-            if (!ikStepper.allowedTargetManipulationAccess()) secondaryLegs.RemoveAt(k);
-            else k++;
+            if (ikStepper.allowedTargetManipulationAccess())
+            {
+                k++;
+            }
+            else
+            {
+                secondaryLegs.RemoveAt(k);
+            }
         }
 
-        currentGaitGroup = primaryLegs;
-        nextSwitchTime = maxStepTime;
+        mainLegs = primaryLegs;
+        stopLegs = bigS;
     }
-
-    private void LateUpdate()
-    {
-        if (spiderStyle == StepMode.AlternatingTetrapodGait) AlternatingTetrapodGait();
-        else QueuespiderStyle();
-    }
-
     private void QueuespiderStyle()
     {
 
         foreach (var ikStepper in legQueue)
         {
-
-            // Check if Leg isnt already waiting for step.
-            if (delay[ikStepper.GetInstanceID()] == true) continue;
-
-            //Now perform check if a step is needed and if so enqueue the element
+            if (delay[ikStepper.GetInstanceID()] == true)
+            {
+                continue;
+            }
             if (ikStepper.stepCheck())
             {
                 whichLeg.Add(ikStepper);
                 delay[ikStepper.GetInstanceID()] = true;
-                if (flag) Debug.Log(ikStepper.name + " is enqueued to step at queue position " + whichLeg.Count);
+
             }
         }
-
-        if (flag) printQueue();
-
 
         int k = 0;
         foreach (var ikStepper in whichLeg.ToArray())
@@ -101,15 +185,12 @@ public class IKStepManager : MonoBehaviour
                 ikStepper.step(calculateStepTime(ikStepper));
                 delay[ikStepper.GetInstanceID()] = false;
                 whichLeg.RemoveAt(k);
-                if (flag) Debug.Log(ikStepper.name + " was allowed to step and is thus removed.");
             }
             else
             {
-                if (flag) Debug.Log(ikStepper.name + " is not allowed to step.");
 
-                if (spiderStyle == StepMode.QueueWait)
+                if (peterStyle == StepMode.QueueWait)
                 {
-                    if (flag) Debug.Log("Wait selected, thus stepping ends for this frame.");
                     break;
                 }
                 k++;
@@ -122,84 +203,20 @@ public class IKStepManager : MonoBehaviour
         }
     }
 
-    private void AlternatingTetrapodGait()
-    {
-
-        if (Time.time < nextSwitchTime) return;
-
-
-        currentGaitGroup = (currentGaitGroup == primaryLegs) ? secondaryLegs : primaryLegs;
-        float stepTime = calculateAverageStepTime(currentGaitGroup);
-        nextSwitchTime = Time.time + stepTime;
-
-        if (flag)
-        {
-            string text = ((currentGaitGroup == primaryLegs) ? "Group: A" : "Group B") + " StepTime: " + stepTime;
-            Debug.Log(text);
-        }
-
-        if (gaitStepForcing == GaitStepForcing.ForceAlways)
-        {
-            foreach (var ikStepper in currentGaitGroup) ikStepper.step(stepTime);
-        }
-        else if (gaitStepForcing == GaitStepForcing.ForceIfOneLegSteps)
-        {
-            bool b = false;
-            foreach (var ikStepper in currentGaitGroup)
-            {
-                b = b || ikStepper.stepCheck();
-                if (b == true) break;
-            }
-            if (b == true) foreach (var ikStepper in currentGaitGroup) ikStepper.step(stepTime);
-        }
-        else
-        {
-            foreach (var ikStepper in currentGaitGroup)
-            {
-                if (ikStepper.stepCheck()) ikStepper.step(stepTime);
-            }
-        }
-    }
 
     private float calculateStepTime(IKStepper ikStepper)
     {
-        if (dynamicStepTime)
+        if (flag1)
         {
-            float k = stepTimePerVelocity * spider.getScale(); // At velocity=1, this is the steptime
-            float velocityMagnitude = ikStepper.getIKChain().getEndeffectorVelocityPerSecond().magnitude;
-            return (velocityMagnitude == 0) ? maxStepTime : Mathf.Clamp(k / velocityMagnitude, 0, maxStepTime);
+            float k = superSpeed * peter.getScale();
+            float vMag = ikStepper.getIKChain().getEndeffectorVelocityPerSecond().magnitude;
+            return (vMag == 0) ? bigS : Mathf.Clamp(k / vMag, 0, bigS);
         }
-        else return maxStepTime;
+        else return bigS;
     }
 
-    private float calculateAverageStepTime(List<IKStepper> legQueue)
-    {
-        if (dynamicStepTime)
-        {
-            float stepTime = 0;
-            foreach (var ikStepper in legQueue)
-            {
-                stepTime += calculateStepTime(ikStepper);
-            }
-            return stepTime / legQueue.Count;
-        }
-        else return maxStepTime;
-    }
 
-    private void printQueue()
-    {
-        if (whichLeg == null) return;
-        string queueText = "[";
-        if (whichLeg.Count != 0)
-        {
-            foreach (var ikStepper in whichLeg)
-            {
-                queueText += ikStepper.name + ", ";
-            }
-            queueText = queueText.Substring(0, queueText.Length - 2);
-        }
-        queueText += "]";
-        Debug.Log("Queue: " + queueText);
-    }
+
+
 }
 
