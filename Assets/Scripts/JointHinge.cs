@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JointHinge : MonoBehaviour {
+public class JointHinge : MonoBehaviour
+{
 
     private Vector3 rotaxlcl;
     private Vector3 perloc;
@@ -24,8 +25,8 @@ public class JointHinge : MonoBehaviour {
     public bool usrotlmts = true;
 
     public Transform root;
- 
-    
+
+
     [Range(-90, 90)]
     public float maxAngle = 90;
 
@@ -37,8 +38,9 @@ public class JointHinge : MonoBehaviour {
     public float startOrientation = 0;
     [Range(-90, 90)]
     public float minAngle = -90;
-    
-    public enum rotationAxisMode {
+
+    public enum rotationAxisMode
+    {
         RootX,
         RootY,
         RootZ,
@@ -47,8 +49,9 @@ public class JointHinge : MonoBehaviour {
         LocalZ
     }
 
-     void OnDrawGizmosSelected() {
-        if (!UnityEditor.Selection.Contains(transform.gameObject)) return;
+    void OnDrawGizmosSelected()
+    {
+        // if (!UnityEditor.Selection.Contains(transform.gameObject)) return;
 
         Awake();
 
@@ -59,7 +62,7 @@ public class JointHinge : MonoBehaviour {
         Vector3 mnor = getMinOrientation();
         Vector3 orn = getOrientation();
         Vector3 rotax = getRotationAxis();
-        
+
 
         Gizmos.color = Color.green;
         Gizmos.DrawLine(rtpnt, rtpnt + scale * rotax);
@@ -67,11 +70,11 @@ public class JointHinge : MonoBehaviour {
         Gizmos.color = Color.blue;
         Gizmos.DrawSphere(rtpnt, 0.01f * scale);
 
-        UnityEditor.Handles.color = Color.red;
-        UnityEditor.Handles.DrawSolidArc(rtpnt, rotax, mnor, maxAngle - minAngle, 0.2f * scale);
+        // UnityEditor.Handles.color = Color.red;
+        // UnityEditor.Handles.DrawSolidArc(rtpnt, rotax, mnor, maxAngle - minAngle, 0.2f * scale);
 
-        UnityEditor.Handles.color = Color.yellow;
-        UnityEditor.Handles.DrawSolidArc(rtpnt, rotax, mnor, curagl - minAngle, 0.1f * scale);
+        // UnityEditor.Handles.color = Color.yellow;
+        // UnityEditor.Handles.DrawSolidArc(rtpnt, rotax, mnor, curagl - minAngle, 0.1f * scale);
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(rtpnt, rtpnt + 0.2f * scale * orn);
@@ -79,15 +82,18 @@ public class JointHinge : MonoBehaviour {
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(rtpnt, rtpnt + 0.2f * scale * dftortn);
     }
-    
 
-    void Update() {
-        if (minAngle > maxAngle) {
+
+    void Update()
+    {
+        if (minAngle > maxAngle)
+        {
             maxAngle = minAngle;
         }
     }
 
-    public void applyRotation(float agl) {
+    public void applyRotation(float agl)
+    {
         if (deacjnt) return;
 
         agl = agl % 360;
@@ -101,7 +107,8 @@ public class JointHinge : MonoBehaviour {
         Vector3 rotaxs = getRotationAxis();
         Vector3 rotPoint = getRotationPoint();
 
-        if (usrotlmts) {
+        if (usrotlmts)
+        {
             agl = Mathf.Clamp(curagl + agl, minAngle, maxAngle) - curagl;
         }
 
@@ -110,17 +117,20 @@ public class JointHinge : MonoBehaviour {
         curagl += agl;
     }
 
-    public float getWeight() {
+    public float getWeight()
+    {
         return wht;
     }
 
-    public int isVectorWithinScope(Vector3 v) {
+    public int isVectorWithinScope(Vector3 v)
+    {
         Vector3 rotationAxis = getRotationAxis();
-        float agl1 = Vector3.SignedAngle(getMinOrientation(), v, rotationAxis); 
-        float agl2 = Vector3.SignedAngle(v, getMaxOrientation(), rotationAxis); 
+        float agl1 = Vector3.SignedAngle(getMinOrientation(), v, rotationAxis);
+        float agl2 = Vector3.SignedAngle(v, getMaxOrientation(), rotationAxis);
 
         if (agl1 >= 0 && agl2 >= 0) return 0;
-        else if (agl1 < 0 && agl2 < 0) {
+        else if (agl1 < 0 && agl2 < 0)
+        {
             float agl3 = Vector3.SignedAngle(getMidOrientation(), v, rotationAxis);
             if (agl3 > 0) return +1;
             else return -1;
@@ -129,76 +139,94 @@ public class JointHinge : MonoBehaviour {
         else return +1;
     }
 
-    private Vector3 getMaxOrientation() {
+    private Vector3 getMaxOrientation()
+    {
         return transform.TransformDirection(mxorlcl);
     }
-    public Vector3 getMidOrientation() {
+    public Vector3 getMidOrientation()
+    {
         return transform.TransformDirection(Quaternion.AngleAxis(0.5f * (maxAngle - minAngle), rotaxlcl) * mnorlcl);
     }
 
-    private Vector3 getMinOrientation() {
+    private Vector3 getMinOrientation()
+    {
         return transform.TransformDirection(mnorlcl);
     }
 
-    public float getAngleRange() {
+    public float getAngleRange()
+    {
         return maxAngle - minAngle;
     }
-    private Vector3 getDefaultOrientation() {
+    private Vector3 getDefaultOrientation()
+    {
         return transform.TransformDirection(dftorlcl);
     }
 
-    
-    public Vector3 getRotationAxis() {
+
+    public Vector3 getRotationAxis()
+    {
         return transform.TransformDirection(rotaxlcl);
     }
 
-    public Vector3 getPerpendicular() {
+    public Vector3 getPerpendicular()
+    {
         return transform.TransformDirection(perloc);
     }
 
-    public Vector3 getRotationPoint() {
+    public Vector3 getRotationPoint()
+    {
         return transform.TransformPoint(0.01f * rotpntofst);
     }
 
-    private Vector3 getOrientation() {
+    private Vector3 getOrientation()
+    {
         return transform.TransformDirection(orlcl);
     }
 
-    
 
-    private void Awake() {
+
+    private void Awake()
+    {
         setupValues();
     }
 
-    private void setupValues() {
+    private void setupValues()
+    {
         Vector3 m = Vector3.zero;
-        Vector3 n = Vector3.zero; 
+        Vector3 n = Vector3.zero;
 
-        if (rotMode == rotationAxisMode.RootX) {
+        if (rotMode == rotationAxisMode.RootX)
+        {
             m = root.right;
             n = root.forward;
         }
-        else if (rotMode == rotationAxisMode.RootY) {
+        else if (rotMode == rotationAxisMode.RootY)
+        {
             m = root.up;
             n = root.right;
         }
-        else if (rotMode == rotationAxisMode.RootZ) {
+        else if (rotMode == rotationAxisMode.RootZ)
+        {
             m = root.forward;
             n = root.up;
         }
-        else if (rotMode == rotationAxisMode.LocalX) {
+        else if (rotMode == rotationAxisMode.LocalX)
+        {
             m = transform.right;
             n = transform.forward;
         }
-        else if (rotMode == rotationAxisMode.LocalY) {
+        else if (rotMode == rotationAxisMode.LocalY)
+        {
             m = transform.up;
             n = transform.right;
         }
-        else if (rotMode == rotationAxisMode.LocalZ) {
+        else if (rotMode == rotationAxisMode.LocalZ)
+        {
             m = transform.forward;
             n = transform.right;
         }
-        if (ngtve) {
+        if (ngtve)
+        {
             m = -m;
             n = -n;
         }
@@ -206,18 +234,20 @@ public class JointHinge : MonoBehaviour {
         rotaxlcl = Quaternion.Euler(rotationAxisOrientation) * transform.InverseTransformDirection(m);
         perloc = Quaternion.Euler(rotationAxisOrientation) * transform.InverseTransformDirection(n);
 
-        if ((rotMode == rotationAxisMode.LocalX) || (rotMode == rotationAxisMode.LocalY) || (rotMode == rotationAxisMode.LocalZ)) {
+        if ((rotMode == rotationAxisMode.LocalX) || (rotMode == rotationAxisMode.LocalY) || (rotMode == rotationAxisMode.LocalZ))
+        {
             orlcl = Quaternion.AngleAxis(startOrientation, rotaxlcl) * perloc;
             dftorlcl = Quaternion.AngleAxis(-curagl, rotaxlcl) * orlcl;
             mnorlcl = Quaternion.AngleAxis(minAngle - curagl, rotaxlcl) * orlcl;
             mxorlcl = Quaternion.AngleAxis(maxAngle - curagl, rotaxlcl) * orlcl;
         }
-        else {
+        else
+        {
             dftorlcl = Quaternion.AngleAxis(startOrientation, rotaxlcl) * perloc;
             orlcl = Quaternion.AngleAxis(curagl, rotaxlcl) * dftorlcl;
             mnorlcl = Quaternion.AngleAxis(minAngle, rotaxlcl) * dftorlcl;
             mxorlcl = Quaternion.AngleAxis(maxAngle, rotaxlcl) * dftorlcl;
         }
     }
-   
+
 }

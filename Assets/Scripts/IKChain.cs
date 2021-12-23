@@ -89,10 +89,10 @@ public class IKChain : MonoBehaviour
     void OnDrawGizmosSelected()
     {
 
-        if (UnityEditor.EditorApplication.isPlaying)
-            return;
-        if (!UnityEditor.Selection.Contains(transform.gameObject))
-            return;
+        // if (UnityEditor.EditorApplication.isPlaying)
+        //     return;
+        // if (!UnityEditor.Selection.Contains(transform.gameObject))
+        //     return;
 
         Awake();
 
